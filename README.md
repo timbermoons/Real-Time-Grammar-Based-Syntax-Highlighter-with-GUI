@@ -69,7 +69,7 @@ return mesaj;
 Kodun doğru parse edilebilmesi için yazım kurallarına uyulması gerekir.
 
 
- Renk Teması
+
 Token Türü	Renk
 keyword	Yeşil
 
