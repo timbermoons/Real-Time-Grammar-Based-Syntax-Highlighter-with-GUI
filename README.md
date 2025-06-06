@@ -71,6 +71,7 @@ Kodun doğru parse edilebilmesi için yazım kurallarına uyulması gerekir.
 
 
 Token Türü	Renk
+
 keyword	Yeşil
 
 identifier	Mavi
