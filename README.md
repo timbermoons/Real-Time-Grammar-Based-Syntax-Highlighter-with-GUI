@@ -33,21 +33,21 @@ Parse ağacını canlı olarak takip edin.
 Lexical Analyzer
 Kod karakter karakter işlenir ve şu token türleri tespit edilir:
 
-keyword: let, function, return, vb.
+keyword:  let, function, return, vb.
 
-identifier: değişken ve fonksiyon isimleri
+identifier:  değişken ve fonksiyon isimleri
 
-string: metin sabitleri
+string:  metin sabitleri
 
-number: sayılar
+number:  sayılar
 
-operator: +, =, ==, * vb.
+operator:  +, =, ==, * vb.
 
-punctuation: (, ), {, } vb.
+punctuation:  (, ), {, } vb.
 
-comment: // veya /* */ açıklamaları
+comment:  // veya /* */ açıklamaları
 
-error: tanınmayan karakterler
+error:  tanınmayan karakterler
 
 
 
