@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kod Çözücü</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      background-color: #34495e;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+    }
+    .container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .editor-panel, .info-panel {
+      padding: 15px;
+      box-sizing: border-box;
+    }
+    .editor-panel {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      border-right: 2px solid #ccc;
+    }
+    .info-panel {
+      flex: 1;
+      background-color: #ecf0f1;
+      overflow-y: auto;
+    }
+    .highlighting-editor {
+      flex: 1;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background-color: #fdfdfd;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      outline: none;
+    }
+    .highlighting-editor span {
+      white-space: pre-wrap;
+    }
+    .token-keyword { color: #27ae60; font-weight: bold; }
+    .token-identifier { color: #2980b9; }
+    .token-string { color: #f1c40f; }
+    .token-number { color: #e67e22; }
+    .token-operator { color: #8e44ad; }
+    .token-comment { color: #7f8c8d; font-style: italic; }
+    .token-punctuation { color: #2c3e50; }
+    .token-error { background-color: #e74c3c; color: white; padding: 2px; }
+    h3 {
+      border-bottom: 1px solid #aaa;
+      padding-bottom: 5px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>Kod Çözücü - Gerçek Zamanlı Sözdizimi Vurgulayıcı</header>
+  <div class="container">
+    <div class="editor-panel">
+      <h3>Kodunuzu Yazın</h3>
+      <div class="highlighting-editor" id="highlightEditor" contenteditable="true" spellcheck="false"></div>
+    </div>
+    <div class="info-panel">
+      <h3>Token Analizi</h3>
+      <ul id="tokenList"><li>Henüz bir şey yazılmadı.</li></ul>
+      <h3>Parse Ağacı</h3>
+      <ul id="parseTree"><li>Henüz bir şey analiz edilmedi.</li></ul>
+    </div>
+  </div>
+  <script>
+    const highlightEditor = document.getElementById('highlightEditor');
+    const tokenList = document.getElementById('tokenList');
+    const parseTree = document.getElementById('parseTree');
+
+    highlightEditor.addEventListener('input', () => {
+      const code = highlightEditor.innerText;
+      const tokens = tokenize(code);
+      highlightEditor.innerHTML = generateHighlightHTML(tokens);
+      placeCaretAtEnd(highlightEditor);
+      updateTokenList(tokens);
+      const tree = buildParseTree(tokens);
+      renderParseTree(tree);
+    });
+
+    function tokenize(code) {
+      const regexList = [
+        { type: 'comment', regex: /\/\/[^\n]*|\/\*[\s\S]*?\*\// },
+        { type: 'string', regex: /("[^"]*"|'[^']*'|`[^`]*`)/ },
+        { type: 'number', regex: /\b\d+(\.\d+)?\b/ },
+        { type: 'keyword', regex: /\b(let|const|var|function|if|else|for|while|return)\b/ },
+        { type: 'identifier', regex: /\b[a-zA-Z_][a-zA-Z0-9_]*\b/ },
+        { type: 'operator', regex: /[+\-*/=<>!&|%^~]+/ },
+        { type: 'punctuation', regex: /[{}();.,\[\]]/ },
+        { type: 'whitespace', regex: /\s+/ },
+      ];
+      let tokens = [];
+      let remaining = code;
+      while (remaining.length > 0) {
+        let matched = false;
+        for (let { type, regex } of regexList) {
+          const match = regex.exec(remaining);
+          if (match && match.index === 0) {
+            if (type !== 'whitespace') tokens.push({ type, value: match[0] });
+            else tokens.push({ type: 'plain', value: match[0] });
+            remaining = remaining.slice(match[0].length);
+            matched = true;
+            break;
+          }
+        }
+        if (!matched) {
+          tokens.push({ type: 'error', value: remaining[0] });
+          remaining = remaining.slice(1);
+        }
+      }
+      return tokens;
+    }
+
+    function generateHighlightHTML(tokens) {
+      return tokens.map(token => {
+        if (token.type === 'plain') return escapeHtml(token.value);
+        const cls = `token-${token.type}`;
+        return `<span class="${cls}">${escapeHtml(token.value)}</span>`;
+      }).join('');
+    }
+
+    function updateTokenList(tokens) {
+      tokenList.innerHTML = '';
+      if (tokens.length === 0) {
+        tokenList.innerHTML = '<li>Hiç token yok.</li>';
+        return;
+      }
+      for (let token of tokens) {
+        const li = document.createElement('li');
+        li.textContent = `${token.type.toUpperCase()}: "${token.value}"`;
+        li.className = `token-${token.type}`;
+        tokenList.appendChild(li);
+      }
+    }
+
+    function buildParseTree(tokens) {
+      let current = 0;
+      function match(type, value = null) {
+        const token = tokens[current];
+        if (!token || token.type !== type || (value && token.value !== value)) return null;
+        current++;
+        return token;
+      }
+
+      function parseExpression() {
+        const token = tokens[current];
+        if (!token) return null;
+        if (token.type === 'identifier' || token.type === 'number' || token.type === 'string') {
+          current++;
+          return { type: 'Expression', value: token.value };
+        }
+        return null;
+      }
+
+      function parseReturnStatement() {
+        const start = match('keyword', 'return');
+        if (!start) return null;
+        const expr = parseExpression();
+        match('punctuation', ';');
+        return { type: 'ReturnStatement', children: [start, expr] };
+      }
+
+      function parseVariableDeclaration() {
+        const start = match('keyword', 'let');
+        if (!start) return null;
+        const id = match('identifier');
+        match('operator', '=');
+        const expr = parseExpression();
+        match('punctuation', ';');
+        return { type: 'VariableDeclaration', children: [start, id, expr] };
+      }
+
+      function parseFunction() {
+        const start = match('keyword', 'function');
+        if (!start) return null;
+        const name = match('identifier');
+        match('punctuation', '(');
+        match('identifier'); // param
+        match('punctuation', ')');
+        match('punctuation', '{');
+        const body = [];
+        while (tokens[current] && tokens[current].value !== '}') {
+          const decl = parseVariableDeclaration() || parseReturnStatement();
+          if (decl) body.push(decl);
+          else current++;
+        }
+        match('punctuation', '}');
+        return { type: 'FunctionDeclaration', children: [start, name, ...body] };
+      }
+
+      const root = { type: 'Program', children: [] };
+      while (current < tokens.length) {
+        const node = parseFunction() || parseVariableDeclaration() || parseReturnStatement();
+        if (node) root.children.push(node);
+        else current++;
+      }
+      return root;
+    }
+
+    function renderParseTree(node, depth = 0) {
+      if (depth === 0) parseTree.innerHTML = '';
+      const li = document.createElement('li');
+      li.textContent = node.type || node.value;
+      li.style.marginLeft = depth * 15 + 'px';
+      parseTree.appendChild(li);
+      if (node.children) {
+        for (const child of node.children) renderParseTree(child, depth + 1);
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+    }
+
+    function placeCaretAtEnd(el) {
+      el.focus();
+      if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+
+    highlightEditor.innerText = `function selamla(isim) {
+  let mesaj = "Merhaba, " + isim;
+  return mesaj;
+}`;
+    highlightEditor.dispatchEvent(new Event('input'));
+  </script>
+</body>
+</html>
