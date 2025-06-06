@@ -80,13 +80,10 @@ Tüm proje tek bir HTML dosyasında yer alır. Kod editörü, token listesi ve p
 
 Kullanıcı arayüzü şu şekilde çalışır:
 
-yaml
-Kopyala
-Düzenle
 Sol Panel: Kod yazımı
 Sağ Panel:
-  ├── Token Analizi
-  └── Parse Ağacı
+   Token Analizi
+   Parse Ağacı
 ⚠ Notlar
 Proje yönergesi gereği hiçbir hazır sözdizimi kütüphanesi kullanılmamıştır.
 
