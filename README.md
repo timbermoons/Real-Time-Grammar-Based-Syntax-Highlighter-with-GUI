@@ -84,6 +84,7 @@ Sol Panel: Kod yazımı
 Sağ Panel:
    Token Analizi
    Parse Ağacı
+   
 ⚠ Notlar
 Proje yönergesi gereği hiçbir hazır sözdizimi kütüphanesi kullanılmamıştır.
 
