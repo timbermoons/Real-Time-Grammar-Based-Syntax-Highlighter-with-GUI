@@ -2,6 +2,7 @@
 🎯 Kod Çözücü - Gerçek Zamanlı Sözdizimi Vurgulayıcı
 Bu proje, JavaScript kodlarını yazarken gerçek zamanlı olarak renklendirme yapan ve aynı zamanda yazılan kodun lexical ve syntax analizini gerçekleştiren bir web uygulamasıdır. Hiçbir dış kütüphane kullanılmadan, tamamen saf JavaScript ile geliştirilmiştir.
 
+
  Özellikler
 🖍 Gerçek zamanlı sözdizimi renklendirme
 
@@ -12,6 +13,7 @@ Bu proje, JavaScript kodlarını yazarken gerçek zamanlı olarak renklendirme y
  Parse ağacı görselleştirme
 
  Temiz ve kullanıcı dostu arayüz
+
 
  Kullanım
 Projeyi bir .html dosyası olarak kaydedin.
@@ -25,6 +27,7 @@ Sağ panelde:
 Token'ların türünü görün.
 
 Parse ağacını canlı olarak takip edin.
+
 
  Teknik Detaylar
 Lexical Analyzer
@@ -46,6 +49,8 @@ comment: // veya /* */ açıklamaları
 
 error: tanınmayan karakterler
 
+
+
 Parser (CFG Tabanlı)
 Top-Down Recursive Descent yöntemi ile aşağıdaki yapılar çözümlenir:
 
@@ -63,16 +68,25 @@ return mesaj;
 
 Kodun doğru parse edilebilmesi için yazım kurallarına uyulması gerekir.
 
+
  Renk Teması
 Token Türü	Renk
 keyword	Yeşil
+
 identifier	Mavi
+
 string	Sarı
+
 number	Turuncu
+
 operator	Mor
+
 comment	Gri
+
 punctuation	Lacivert
+
 error	Kırmızı zemin, beyaz yazı
+
 
  Proje Yapısı
 Tüm proje tek bir HTML dosyasında yer alır. Kod editörü, token listesi ve parse ağacı aynı sayfada canlı olarak çalışır.
