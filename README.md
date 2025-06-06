@@ -72,21 +72,21 @@ Kodun doğru parse edilebilmesi için yazım kurallarına uyulması gerekir.
 
 Token Türü	Renk
 
-keyword	Yeşil
+keyword ->	Yeşil
 
-identifier	Mavi
+identifier	-> Mavi
 
-string	Sarı
+string ->	Sarı
 
-number	Turuncu
+number ->	Turuncu
 
-operator	Mor
+operator ->	Mor
 
-comment	Gri
+comment ->	Gri
 
-punctuation	Lacivert
+punctuation ->	Lacivert
 
-error	Kırmızı zemin, beyaz yazı
+error ->	Kırmızı zemin, beyaz yazı
 
 
  Proje Yapısı
